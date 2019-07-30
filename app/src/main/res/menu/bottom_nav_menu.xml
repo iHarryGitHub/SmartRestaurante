@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_print"
+        android:icon="@drawable/ic_print_black_24dp"
+        android:title="Cuenta" />
+
+
+    <item
+        android:id="@+id/navigation_table"
+        android:icon="@drawable/ic_restaurant_menu_black_24dp"
+        android:title="@string/title_dashboard" />
+
+
+
+    <item
+        android:id="@+id/navigation_top"
+        android:icon="@drawable/ic_stars_black_24dp"
+        android:title="@string/title_top" />
+
+
+</menu>
