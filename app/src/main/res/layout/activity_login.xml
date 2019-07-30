@@ -5,26 +5,30 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#DBFFE2"
-    tools:context=".LoginActivity">
+    tools:context=".ui.activity.login.LoginActivity">
 
     <LinearLayout
+        android:layout_marginTop="25sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
         <ProgressBar
+            android:layout_marginLeft="25sp"
+            android:layout_marginRight="25sp"
+            android:visibility="invisible"
             style="?android:attr/progressBarStyleHorizontal"
             android:indeterminateOnly="true"
-            android:visibility="gone"
             android:id="@+id/progressBar"
-
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
 
         <androidx.cardview.widget.CardView
+            app:cardCornerRadius="18sp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="20dp">
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20sp">
 
             <ImageView
                 android:onClick="setOnSettingListener"
@@ -41,7 +45,8 @@
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:orientation="vertical"
-                android:padding="32dp">
+                android:padding="32dp"
+                >
 
 
 

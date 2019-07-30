@@ -15,6 +15,8 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.android.volley.VolleyError;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,11 +26,10 @@ import java.util.ArrayList;
 import es.dmoral.toasty.Toasty;
 import pe.smartsystem.smartrestaurante.ConexionSQLITEhelper;
 import pe.smartsystem.smartrestaurante.IP;
-import pe.smartsystem.smartrestaurante.LoginActivity;
+import pe.smartsystem.smartrestaurante.ui.activity.login.LoginActivity;
 import pe.smartsystem.smartrestaurante.R;
 import pe.smartsystem.smartrestaurante.ServiciosWeb.SolicitudesJson;
 import pe.smartsystem.smartrestaurante.Utilidades.Utilidades;
-import pe.smartsystem.smartrestaurante.splash.SplashScreenActivity;
 
 public class SettingActivity extends AppCompatActivity {
 
@@ -46,6 +47,9 @@ public class SettingActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        setTitle("CONFIGURACION");
 
         mAdminEditText  = findViewById(R.id.label_setting_et_admin);
         mPassEditText   = findViewById(R.id.label_setting_et_passwrod);
@@ -59,6 +63,12 @@ public class SettingActivity extends AppCompatActivity {
 
         consultarListaIPs();
 
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 
     public void setOnClickAddListener(View view) {
@@ -119,50 +129,50 @@ public class SettingActivity extends AppCompatActivity {
 
     }
 
-    private void descargarToplasTop(String ip) {
-        Log.e("ip", "http://"+ip+"/WS/TopProductos.php");
-        Toasty.info(this, "Descargando...", Toast.LENGTH_SHORT).show();
-
-
-        SolicitudesJson json = new SolicitudesJson() {
-            @Override
-            public void solicitudCompletada(JSONObject j) {
-                try {
-                    String variable = "ProductosGeneral";
-                    cn.deleteUser();
-                    String TodoslasMesas= j.getString(variable);
-                    JSONArray jsonArray = new JSONArray(TodoslasMesas);
-                    for(int i=0;i<jsonArray.length();i++){
-                        JSONObject js = jsonArray.getJSONObject(i);
-                        try{
-                            guardarToplas(js.getString("idProducto")+""
-                                    , js.getString("NombreProducto")+""
-                                    , js.getString("PrecioUnidad")+""
-                                    , js.getString("Destino")+""
-                                    , js.getString("NombreCategoria"));
-                        }catch (Exception e){
-                        }
-                    }
-
-                    Toasty.success(SettingActivity.this, "PLATOS GUARDADOS", Toast.LENGTH_SHORT).show();
-
-                }catch (JSONException e){
-                    Toast.makeText(SettingActivity.this,"Error al guardar los platos",Toast.LENGTH_SHORT).show();
-                    finish();
-                    startActivity(new Intent(SettingActivity.this, LoginActivity.class));
-                }
-            }
-
-            @Override
-            public void solicitudErronea() {
-                Toasty.error(SettingActivity.this, "Error", Toasty.LENGTH_SHORT ,true).show();
-
-            }
-        };
-        final String url_top="http://"+ip+"/WS/TopProductos.php";
-        json.solicitudJsonGET(this,url_top);
-
-    }
+//    private void descargarToplasTop(String ip) {
+//        Log.e("ip", "http://"+ip+"/WS/TopProductos.php");
+//        Toasty.info(this, "Descargando...", Toast.LENGTH_SHORT).show();
+//
+//
+//        SolicitudesJson json = new SolicitudesJson() {
+//            @Override
+//            public void solicitudCompletada(JSONObject j) {
+//                try {
+//                    String variable = "ProductosGeneral";
+//                    cn.deleteUser();
+//                    String TodoslasMesas= j.getString(variable);
+//                    JSONArray jsonArray = new JSONArray(TodoslasMesas);
+//                    for(int i=0;i<jsonArray.length();i++){
+//                        JSONObject js = jsonArray.getJSONObject(i);
+//                        try{
+//                            guardarToplas(js.getString("idProducto")+""
+//                                    , js.getString("NombreProducto")+""
+//                                    , js.getString("PrecioUnidad")+""
+//                                    , js.getString("Destino")+""
+//                                    , js.getString("NombreCategoria"));
+//                        }catch (Exception e){
+//                        }
+//                    }
+//
+//                    Toasty.success(SettingActivity.this, "PLATOS GUARDADOS", Toast.LENGTH_SHORT).show();
+//
+//                }catch (JSONException e){
+//                    Toast.makeText(SettingActivity.this,"Error al guardar los platos",Toast.LENGTH_SHORT).show();
+//                    finish();
+//                    startActivity(new Intent(SettingActivity.this, LoginActivity.class));
+//                }
+//            }
+//
+//            @Override
+//            public void solicitudErronea(VolleyError error) {
+//                Toasty.error(SettingActivity.this, "Error", Toasty.LENGTH_SHORT ,true).show();
+//
+//            }
+//        };
+//        final String url_top="http://"+ip+"/WS/TopProductos.php";
+//        json.solicitudJsonGET(this,url_top);
+//
+//    }
 
 
 

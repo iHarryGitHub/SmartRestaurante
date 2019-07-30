@@ -1,17 +1,18 @@
-package pe.smartsystem.smartrestaurante.ui.activity.mesas;
+package pe.smartsystem.smartrestaurante;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.os.Handler;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.Toast;
-
 import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,20 +21,21 @@ import org.json.JSONObject;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import es.dmoral.toasty.Toasty;
-import pe.smartsystem.smartrestaurante.AutoFitGridLayoutManager;
-import pe.smartsystem.smartrestaurante.LoginActivity;
-import pe.smartsystem.smartrestaurante.R;
 import pe.smartsystem.smartrestaurante.ServiciosWeb.SolicitudesJson;
 import pe.smartsystem.smartrestaurante.URLs.Links;
-import pe.smartsystem.smartrestaurante.VolleyRP;
 import pe.smartsystem.smartrestaurante.ui.activity.MesaPojo;
+import pe.smartsystem.smartrestaurante.ui.activity.login.LoginActivity;
 import pe.smartsystem.smartrestaurante.ui.activity.main.MainActivity;
 import pe.smartsystem.smartrestaurante.ui.activity.mesas.adapter.AdapterListaMesas;
 
 public class TableActivity extends AppCompatActivity {
 
 
+    @BindView(R.id.progressBarTable)
+    ProgressBar progressBarTable;
     private RecyclerView recyclerView;
     private AdapterListaMesas adapterCotizacion;
     private ArrayList<MesaPojo> mesaPojos;
@@ -42,22 +44,20 @@ public class TableActivity extends AppCompatActivity {
     private RequestQueue mRequest;
 
     private void refresh() {
-
+        progressBarTable.setVisibility(View.VISIBLE);
         mesaPojos.removeAll(mesaPojos);
         adapterCotizacion.notifyDataSetChanged();
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                showTables();
-            }
-        }, 1000) ;
+        showTables();
+
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_table);
+        getSupportActionBar().hide();
+        ButterKnife.bind(this);
 
         volley = VolleyRP.getInstance(TableActivity.this);
         mRequest = volley.getRequestQueue();
@@ -65,8 +65,8 @@ public class TableActivity extends AppCompatActivity {
         setTitle(LoginActivity.Personal);
 
         mesaPojos = new ArrayList<>();
-        recyclerView    = findViewById(R.id.label_profile_lista_mesas_rv);
-        adapterCotizacion   = new AdapterListaMesas(mesaPojos);
+        recyclerView = findViewById(R.id.label_profile_lista_mesas_rv);
+        adapterCotizacion = new AdapterListaMesas(mesaPojos);
 
         AutoFitGridLayoutManager layoutManager = new AutoFitGridLayoutManager(this, 150);
         recyclerView.setLayoutManager(layoutManager);
@@ -86,47 +86,49 @@ public class TableActivity extends AppCompatActivity {
         showTables();
 
 
-
     }
 
     private void showTables() {
 
-        SolicitudesJson s=new SolicitudesJson() {
+        SolicitudesJson s = new SolicitudesJson() {
             @Override
             public void solicitudCompletada(JSONObject j) {
-                MesaPojo consultita=null;
+                MesaPojo consultita = null;
                 try {
-                    String TodoslasMesas= j.getString("mesas");
+                    String TodoslasMesas = j.getString("mesas");
                     JSONArray jsonArray = new JSONArray(TodoslasMesas);
-                    for(int i=0;i<jsonArray.length();i++){
+                    for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject js = jsonArray.getJSONObject(i);
-                        if(js.getString("Estado").equalsIgnoreCase("Ocupada")){
-                            consultita= new MesaPojo(js.getInt("NMesa"),"ocupada");
+                        if (js.getString("Estado").equalsIgnoreCase("Ocupada")) {
+                            consultita = new MesaPojo(js.getInt("NMesa"), "ocupada");
                             mesaPojos.add(consultita);
                             adapterCotizacion.notifyDataSetChanged();
-                        }else if(js.getString("Estado").equalsIgnoreCase("Libre")){
-                            consultita= new MesaPojo(js.getInt("NMesa"),"libre");
+                        } else if (js.getString("Estado").equalsIgnoreCase("Libre")) {
+                            consultita = new MesaPojo(js.getInt("NMesa"), "libre");
                             mesaPojos.add(consultita);
                             adapterCotizacion.notifyDataSetChanged();
-                        }else if(js.getString("Estado").equalsIgnoreCase("En Caja")){
-                            consultita= new MesaPojo(js.getInt("NMesa"),"espera");
+                        } else if (js.getString("Estado").equalsIgnoreCase("En Caja")) {
+                            consultita = new MesaPojo(js.getInt("NMesa"), "espera");
                             mesaPojos.add(consultita);
                             adapterCotizacion.notifyDataSetChanged();
                         }
 
                     }
+                    progressBarTable.setVisibility(View.GONE);
 
-                }catch (JSONException e){
+                } catch (JSONException e) {
+                    progressBarTable.setVisibility(View.GONE);
                     Toasty.info(TableActivity.this, "error al descomponer JSON", Toast.LENGTH_SHORT, true).show();
                 }
             }
 
             @Override
-            public void solicitudErronea() {
-                Toasty.info(TableActivity.this,"No ay conexion",Toast.LENGTH_SHORT,true).show();
+            public void solicitudErronea(VolleyError error) {
+                progressBarTable.setVisibility(View.GONE);
+                Toasty.info(TableActivity.this, error.getMessage() + "", Toast.LENGTH_SHORT, true).show();
             }
         };
-        s.solicitudJsonGET(TableActivity.this,URL_GET_MESAS);
+        s.solicitudJsonGET(TableActivity.this, URL_GET_MESAS);
 
 
     }

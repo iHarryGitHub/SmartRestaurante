@@ -66,7 +66,7 @@ public class CartListAdapter extends RecyclerView.Adapter<CartListAdapter.MyView
         holder.mCantidad.setText(detalleMesaPojos.get(i).getCantidad()+"");
         //double pu=Double.parseDouble(detalleMesaPojos.get(i).getPu());
 
-       double pu =Double.parseDouble(detalleMesaPojos.get(i).getPrecxprod());
+       double pu =Double.parseDouble(detalleMesaPojos.get(i).getPrecxprod());//recibe null
         int cantidad=Integer.parseInt(detalleMesaPojos.get(i).getCantidad());
        // holder.mPU.setText(""+detalleMesaPojos.get(i).getPu());
         holder.mPU.setText(""+detalleMesaPojos.get(i).getPrecxprod());

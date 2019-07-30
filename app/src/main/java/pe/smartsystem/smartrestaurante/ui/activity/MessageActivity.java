@@ -115,7 +115,7 @@ public class MessageActivity extends AppCompatActivity implements OnSelectedList
                     }
 
                     @Override
-                    public void solicitudErronea() {
+                    public void solicitudErronea(VolleyError error) {
                         Toast.makeText(MessageActivity.this,"No se Agrego el mensaje correctamente",Toast.LENGTH_SHORT).show();
                     }
                 };
@@ -219,7 +219,7 @@ public class MessageActivity extends AppCompatActivity implements OnSelectedList
             }
 
             @Override
-            public void solicitudErronea() {
+            public void solicitudErronea(VolleyError error) {
 
 
             }

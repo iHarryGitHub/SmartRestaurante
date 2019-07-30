@@ -1,4 +1,4 @@
-package pe.smartsystem.smartrestaurante;
+package pe.smartsystem.smartrestaurante.ui.activity.login;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -6,11 +6,15 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.strictmode.SqliteObjectLeakedViolation;
+import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -30,14 +34,19 @@ import java.util.Collections;
 import java.util.List;
 
 import es.dmoral.toasty.Toasty;
+import pe.smartsystem.smartrestaurante.ConexionSQLITEhelper;
+import pe.smartsystem.smartrestaurante.IP;
+import pe.smartsystem.smartrestaurante.R;
 import pe.smartsystem.smartrestaurante.ServiciosWeb.SolicitudesJson;
+import pe.smartsystem.smartrestaurante.TableActivity;
 import pe.smartsystem.smartrestaurante.URLs.Links;
 import pe.smartsystem.smartrestaurante.Utilidades.Utilidades;
+import pe.smartsystem.smartrestaurante.VolleyRP;
+import pe.smartsystem.smartrestaurante.network.ApiClient;
+import pe.smartsystem.smartrestaurante.network.ApiInterface;
 import pe.smartsystem.smartrestaurante.setting.SettingActivity;
-import pe.smartsystem.smartrestaurante.splash.SplashScreenActivity;
-import pe.smartsystem.smartrestaurante.ui.activity.MessageActivity;
-import pe.smartsystem.smartrestaurante.ui.activity.mesas.TableActivity;
-import pe.smartsystem.smartrestaurante.ui.fragment.category.CategoriaPlato;
+import retrofit2.Call;
+import retrofit2.Callback;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -60,21 +69,36 @@ public class LoginActivity extends AppCompatActivity {
 
 
     private ProgressBar bar;
+    private Button loginButton;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
+        getSupportActionBar().hide();
         volley = VolleyRP.getInstance(LoginActivity.this);
         mRequest = volley.getRequestQueue();
 
-        bar=findViewById(R.id.progressBar);
-        txtUsuario = (EditText) findViewById(R.id.txtUsuario);
-        txtClave = (EditText) findViewById(R.id.txtClave);
+        loginButton =findViewById(R.id.btnIngresar);
+        bar     =findViewById(R.id.progressBar);
+        txtUsuario  = (EditText) findViewById(R.id.txtUsuario);
+        txtClave    = (EditText) findViewById(R.id.txtClave);
         //lblConfiguracion = (ImageView) findViewById(R.id.lblConfiguracion);
 
         consultarListaIPs();
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+
+        if (Build.VERSION.SDK_INT >= 21) {
+            Window window = getWindow();
+
+
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            //window.setStatusBarColor(Color.parseColor("#000000"));
+        }
+
+
       //  attemptLogin
 
 
@@ -90,7 +114,9 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void attemptLogin(View view) {
+        loginButton.setEnabled(false);
         mac = getMacAddr();
+        //mac="02:15:b2:00:00:00";
         validarIMEI(mac);
     }
 
@@ -100,6 +126,8 @@ public class LoginActivity extends AppCompatActivity {
         if(IPparaConexion.equalsIgnoreCase("")){
             Toasty.error(LoginActivity.this, "No se a guardado la IP  y port", Toast.LENGTH_SHORT).show();
             bar.setVisibility(View.GONE);
+            loginButton.setEnabled(true);
+            //startActivity(new Intent(this,SettingActivity.class));
             return;
         }
 
@@ -120,13 +148,16 @@ public class LoginActivity extends AppCompatActivity {
                     VerificacionLogin(txtUsuario.getText().toString(),txtClave.getText().toString());
                 }catch (JSONException e){
                     bar.setVisibility(View.GONE);
+                    loginButton.setEnabled(true);
                     Toasty.error(LoginActivity.this, "error al descomponer JSON", Toast.LENGTH_SHORT, true).show();
                 }
             }
 
             @Override
-            public void solicitudErronea() {
-                Toasty.error(LoginActivity.this,"Este equipo no esta registrado",Toast.LENGTH_SHORT).show();
+            public void solicitudErronea(VolleyError error) {
+                bar.setVisibility(View.GONE);
+                loginButton.setEnabled(true);
+                Toasty.error(LoginActivity.this,error.getMessage(),Toast.LENGTH_LONG).show();
             }
         };
         s.solicitudJsonGET(LoginActivity.this,URLVALIDARMAC);
@@ -149,18 +180,20 @@ public class LoginActivity extends AppCompatActivity {
                         Nombre =js.optString("Nombre");
                     }
 
-                    Toasty.success(LoginActivity.this, "Credenciales Válidas.", Toast.LENGTH_SHORT).show();
+                    Toasty.success(LoginActivity.this, "Credenciales Válidas", Toast.LENGTH_SHORT).show();
                     getToplas();
 
                     //agregar al final de las categorias
 //
                 }catch (JSONException e){
+                    loginButton.setEnabled(true);
                     Toasty.error(LoginActivity.this, "Usuario y/o contraseña incorrecta", Toast.LENGTH_SHORT, true).show();
                 }
             }
 
             @Override
-            public void solicitudErronea() {
+            public void solicitudErronea(VolleyError error) {
+                loginButton.setEnabled(true);
                 bar.setVisibility(View.GONE);
                 Toasty.error(LoginActivity.this,"Usuario y/o contraseña incorrecta",Toast.LENGTH_SHORT,true).show();
             }
@@ -205,7 +238,8 @@ public class LoginActivity extends AppCompatActivity {
             }
         } catch (Exception ex) {
         }
-        return "02:00:00:00:00:00";
+       // return "02:00:00:00:00:00";
+        return "02:15:b2:00:00:00";
     }
 
 
@@ -255,17 +289,19 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     }
 
-                    Toasty.success(LoginActivity.this, "PLATOS GUARDADOS", Toast.LENGTH_SHORT).show();
+                    Toasty.success(LoginActivity.this, "Platos guardados", Toast.LENGTH_SHORT).show();
                     guardarCategorias();
 //
                 }catch (JSONException e){
+                    loginButton.setEnabled(true);
                     Toast.makeText(LoginActivity.this,"Error al descomponer el Json",Toast.LENGTH_SHORT).show();
                     finish();
                     startActivity(new Intent(LoginActivity.this, LoginActivity.class));
                 }
             }
             @Override
-            public void solicitudErronea() {
+            public void solicitudErronea(VolleyError error) {
+                loginButton.setEnabled(true);
                 Toast.makeText(LoginActivity.this,"Error al consultar Top de Productos",Toast.LENGTH_SHORT).show();
                 finish();
                 startActivity(new Intent(LoginActivity.this, LoginActivity.class));
@@ -300,11 +336,10 @@ public class LoginActivity extends AppCompatActivity {
                         sqlitEhelper.guardarCategoria(js.getString("IdCategoria"),js.getString("NombreCategoria"));
 
                     }
-                    Toasty.success(LoginActivity.this, "Categorias Guardadas", Toast.LENGTH_SHORT).show();
+                    guardarTodoLosPlatos();
+                    Toasty.success(LoginActivity.this, "Categorias guardadas", Toast.LENGTH_SHORT).show();
 
-                    Intent IngresoBn = new Intent(LoginActivity.this,TableActivity.class);
-                   startActivity(IngresoBn);
-                    finish();
+
                 }catch (JSONException e){
                     Toast.makeText(LoginActivity.this,"Error al descomponer el Json",Toast.LENGTH_SHORT).show();
                 }
@@ -312,7 +347,8 @@ public class LoginActivity extends AppCompatActivity {
         },new Response.ErrorListener(){
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(LoginActivity.this,"Error al consultar Categorias",Toast.LENGTH_SHORT).show();
+                loginButton.setEnabled(true);
+                Toast.makeText(LoginActivity.this,error.getMessage(),Toast.LENGTH_SHORT).show();
             }
         });
         VolleyRP.addToQueue(solicitud,mRequest,LoginActivity.this,volley);
@@ -321,19 +357,51 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+    private void guardarTodoLosPlatos() {
+        ApiInterface apiService = ApiClient.getCliente().create(ApiInterface.class);
 
+        Call<List<Plato>>call=apiService.callPlatos();
 
+        call.enqueue(new Callback<List<Plato>>() {
+            @Override
+            public void onResponse(Call<List<Plato>> call, retrofit2.Response<List<Plato>> response) {
+                cn.deletetodolosplatos();
+                List<Plato> list = response.body();
 
+                for (Plato plato:list){
+                    sqlitEhelper.guardarTodoLosToplas(plato);
+                }
 
+                Toasty.success(LoginActivity.this, "OK ", Toast.LENGTH_SHORT).show();
+
+                Intent IngresoBn = new Intent(LoginActivity.this, TableActivity.class);
+                startActivity(IngresoBn);
+                finish();
+            }
+
+            @Override
+            public void onFailure(Call<List<Plato>> call, Throwable t) {
+                Toast.makeText(LoginActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
 
 
     //GURDAREN SQLIT
-
     private static final String idproducto="idproducto";
     private static final String nombreProducto="nombreProducto";
     private static final String precioUnidad="precioUnidad";
     private static final String destino="destino";
     private static final String nombrecategoria="NombreCategoria";
+
+    private void guardartodolosplatos(){
+        SQLiteDatabase database =cn.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("1", 1);
+        Long ipRegistrado=database.insert("todolosplatos",null,values);
+
+    }
 
 
     private void RegistrarIP(String id,String nombre,String precio,String des,String nombCatego ){

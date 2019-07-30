@@ -3,11 +3,16 @@ package pe.smartsystem.smartrestaurante.network;
 import java.util.List;
 
 
+import pe.smartsystem.smartrestaurante.ui.activity.login.Plato;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 
 public interface ApiInterface {
+
+
+    @GET("todolosplatos.php")
+    Call<List<Plato>> callPlatos();
 
 
 

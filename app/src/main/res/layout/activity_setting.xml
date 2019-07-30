@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -47,7 +47,7 @@
                     android:padding="15dp" />
 
                 <EditText
-                    android:text="rtsSmartSystem+@"
+
                     android:textColor="@android:color/black"
                     android:textColorHint="@color/colorPrimary"
                     android:id="@+id/label_setting_et_passwrod"
@@ -60,7 +60,6 @@
                     android:padding="15dp" />
 
                 <EditText
-                    android:text="190.81.3.91:82"
                     android:textColor="@android:color/black"
                     android:textColorHint="@color/colorPrimary"
                     android:id="@+id/label_setting_et_ip"
@@ -88,7 +87,7 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/label_setting_rv_ip"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="match_parent">
 
                 </androidx.recyclerview.widget.RecyclerView>
 
@@ -107,4 +106,4 @@
 
 
 
-</LinearLayout>
+</ScrollView>

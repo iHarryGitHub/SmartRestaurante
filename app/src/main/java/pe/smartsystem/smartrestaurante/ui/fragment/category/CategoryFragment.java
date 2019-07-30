@@ -95,7 +95,7 @@ public class CategoryFragment extends Fragment  implements OnCategoryPlatosListe
     private void consultarlabd() {
         ArrayList<CategoriaPlato> allTags = cn.getCategorias();
         for (CategoriaPlato tag : allTags) {
-            Toast.makeText(getContext(), ""+tag.getName(), Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getContext(), ""+tag.getName(), Toast.LENGTH_SHORT).show();
             arrayList.add(tag);
         }
         adapter.notifyDataSetChanged();

@@ -3,11 +3,13 @@ package pe.smartsystem.smartrestaurante.network;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import pe.smartsystem.smartrestaurante.URLs.Links;
+import pe.smartsystem.smartrestaurante.ui.activity.login.LoginActivity;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ApiClient {
-    private static final String BASE_URL = "http://190.81.3.91/WS/";
+    //private static final String BASE_URL = "http://190.81.3.91/WS/";
     private static Retrofit retrofit = null;
 
     /**
@@ -26,7 +28,7 @@ public class ApiClient {
 
         if (retrofit == null){
             retrofit = new Retrofit.Builder()
-                    .baseUrl(BASE_URL)
+                    .baseUrl("http://"+ LoginActivity.IPgeneral+"/WS/")
                   .addConverterFactory(GsonConverterFactory.create())
                     // .addConverterFactory(GsonConverterFactory.create(gson))
                     .build();

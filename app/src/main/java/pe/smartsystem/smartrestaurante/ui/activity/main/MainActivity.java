@@ -1,7 +1,6 @@
 package pe.smartsystem.smartrestaurante.ui.activity.main;
 
 import android.content.DialogInterface;
-import android.graphics.Color;
 import android.os.Bundle;
 
 import com.android.volley.Request;
@@ -17,7 +16,6 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.view.MenuItem;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,7 +25,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import es.dmoral.toasty.Toasty;
-import pe.smartsystem.smartrestaurante.LoginActivity;
+import pe.smartsystem.smartrestaurante.ui.activity.login.LoginActivity;
 import pe.smartsystem.smartrestaurante.R;
 import pe.smartsystem.smartrestaurante.ServiciosWeb.SolicitudesJson;
 import pe.smartsystem.smartrestaurante.URLs.Links;
@@ -116,12 +114,12 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(JSONObject datos) {
-                Toast.makeText(MainActivity.this, "Se envio las comandas correctamente", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Se envió las comandas correctamente", Toast.LENGTH_SHORT).show();
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(MainActivity.this, "No ay pendiente de envio de comandas", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "No hay pendiente de envio decomandas", Toast.LENGTH_SHORT).show();
             }
         });
         VolleyRP.addToQueue(solicitud, mRequest, MainActivity.this, volley);
@@ -136,6 +134,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         BottomNavigationView navView = findViewById(R.id.nav_view);
+       // getSupportActionBar().hide();
 
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
@@ -229,7 +228,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void solicitudErronea() {
+            public void solicitudErronea(VolleyError error) {
                 Toasty.info(MainActivity.this,"Error al consultar progreso",Toast.LENGTH_SHORT,true).show();
             }
         };

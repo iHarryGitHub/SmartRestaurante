@@ -1,6 +1,6 @@
 package pe.smartsystem.smartrestaurante.URLs;
 
-import pe.smartsystem.smartrestaurante.LoginActivity;
+import pe.smartsystem.smartrestaurante.ui.activity.login.LoginActivity;
 
 public class Links {
 

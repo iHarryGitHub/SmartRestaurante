@@ -16,7 +16,7 @@ import pe.smartsystem.smartrestaurante.VolleyRP;
 public abstract class SolicitudesJson {
 
     public abstract void solicitudCompletada(JSONObject j);
-    public abstract void solicitudErronea();
+    public abstract void solicitudErronea(VolleyError error);
 
     public SolicitudesJson(){
 
@@ -31,7 +31,7 @@ public abstract class SolicitudesJson {
         },new Response.ErrorListener(){
             @Override
             public void onErrorResponse(VolleyError error) {
-                solicitudErronea();
+                solicitudErronea(error);
             }
         });
         VolleyRP.addToQueue(solicitud,VolleyRP.getInstance(c).getRequestQueue(),c,VolleyRP.getInstance(c));
@@ -46,7 +46,7 @@ public abstract class SolicitudesJson {
         },new Response.ErrorListener(){
             @Override
             public void onErrorResponse(VolleyError error) {
-                solicitudErronea();
+                solicitudErronea(error);
             }
         });
         VolleyRP.addToQueue(solicitud,VolleyRP.getInstance(c).getRequestQueue(),c,VolleyRP.getInstance(c));

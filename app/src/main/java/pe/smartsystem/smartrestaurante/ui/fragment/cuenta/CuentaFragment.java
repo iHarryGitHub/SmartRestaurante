@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -85,10 +86,13 @@ public class CuentaFragment extends Fragment {
 
     private void addStatic() {
 
+        //validar si el json esta vacio!!!!!!!!!!
 
         SolicitudesJson s=new SolicitudesJson() {
             @Override
             public void solicitudCompletada(JSONObject j) {
+
+//                Toast.makeText(getContext(), ""+j.toString(), Toast.LENGTH_SHORT).show();
                 try {
                     String TodoslasMesas= j.getString("mesasDetalle");
                     JSONArray jsonArray = new JSONArray(TodoslasMesas);
@@ -105,13 +109,14 @@ public class CuentaFragment extends Fragment {
                     }
 
                 }catch (JSONException e){
-                    Toasty.info(getContext(), "error al descomponer JSON", Toast.LENGTH_SHORT, true).show();
+                    Toasty.info(getContext(), "Mesa vacia", Toast.LENGTH_SHORT,true).show();
+                    //Toasty.info(getContext(), "error al descomponer JSON", Toast.LENGTH_SHORT, true).show();
                 }
             }
 
             @Override
-            public void solicitudErronea() {
-                Toasty.info(getContext(),"No ay conexion",Toast.LENGTH_SHORT,true).show();
+            public void solicitudErronea(VolleyError error) {
+                Toasty.info(getContext(),error.getMessage()+"",Toast.LENGTH_LONG,true).show();
             }
         };
         s.solicitudJsonGET(getContext(),URL_GET_MESAS+ MainActivity.numero_mesa);
@@ -134,7 +139,7 @@ public class CuentaFragment extends Fragment {
             }
 
             @Override
-            public void solicitudErronea() {
+            public void solicitudErronea(VolleyError error) {
             }
         };
         s.solicitudJsonPOST(getContext(),IP_ACTUALIZAR,hashMapToken);
