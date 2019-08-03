@@ -1,4 +1,4 @@
-package pe.smartsystem.smartrestaurante.setting;
+package pe.smartsystem.smartrestaurante.ui.activity.setting;
 
 public class Setting {
 

@@ -84,7 +84,7 @@ public class ConexionSQLITEhelper extends SQLiteOpenHelper {
 
     public List<Plato> getToplaxCategoria(String id){
         List<Plato> tags = new ArrayList<Plato>();
-        String selectQuery = "SELECT  * FROM " + "TODOLOSTOPLAS where IdCategoria ='"+id+"'";
+        String selectQuery = "SELECT * FROM " + "TODOLOSTOPLAS where IdCategoria ='"+id+"'";
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
@@ -104,8 +104,6 @@ public class ConexionSQLITEhelper extends SQLiteOpenHelper {
         }
         return tags;
     }
-
-
 
     public List<DataModel> getAllTags() {
         List<DataModel> tags = new ArrayList<DataModel>();

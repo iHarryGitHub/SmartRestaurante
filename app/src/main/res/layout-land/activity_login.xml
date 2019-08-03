@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#DBFFE2"
+    tools:context=".ui.activity.login.LoginActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="25sp"
+        android:orientation="vertical">
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="25sp"
+            android:layout_marginRight="25sp"
+            android:indeterminateOnly="true"
+            android:visibility="invisible" />
+
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20sp"
+            app:cardCornerRadius="18sp">
+
+
+            <ImageView
+                android:id="@+id/lblConfiguracion"
+                android:layout_width="64sp"
+                android:layout_height="64sp"
+                android:layout_gravity="right"
+                android:onClick="setOnSettingListener"
+                android:src="@drawable/cf" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_marginLeft="15sp"
+                    android:layout_gravity="center"
+                    android:id="@+id/imageView2"
+                    android:layout_width="250sp"
+                    android:layout_height="250sp"
+                    app:srcCompat="@drawable/img" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="32dp">
+
+
+                    <EditText
+                        android:id="@+id/txtUsuario"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="28dp"
+                        android:background="@drawable/shape_et"
+                        android:drawablePadding="10dp"
+                        android:hint="Usuario"
+                        android:inputType="textPersonName"
+                        android:padding="15dp"
+                        android:text="JUAN"
+                        android:textColor="@android:color/black"
+                        android:textColorHint="@color/colorPrimary" />
+
+                    <EditText
+                        android:id="@+id/txtClave"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:background="@drawable/shape_et"
+                        android:drawablePadding="10dp"
+                        android:hint="Contraseña"
+                        android:inputType="textPassword"
+                        android:padding="15dp"
+                        android:text="1"
+                        android:textColor="@android:color/black"
+                        android:textColorHint="@color/colorPrimary" />
+
+
+                    <Button
+                        android:id="@+id/btnIngresar"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="32dp"
+                        android:background="@drawable/shape_button_login"
+                        android:text="INGRESAR"
+                        android:textColor="#ffffff" />
+
+
+                </LinearLayout>
+            </LinearLayout>
+
+
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:layout_marginBottom="25sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="8sp"
+            android:gravity="center"
+            android:text="© POWERED BY AI"
+            android:textColor="@android:color/black" />
+
+
+    </LinearLayout>
+
+
+
+
+</ScrollView>

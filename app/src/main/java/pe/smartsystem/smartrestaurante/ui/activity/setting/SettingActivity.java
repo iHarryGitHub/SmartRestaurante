@@ -1,4 +1,4 @@
-package pe.smartsystem.smartrestaurante.setting;
+package pe.smartsystem.smartrestaurante.ui.activity.setting;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -8,18 +8,14 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.EditText;
 import android.widget.Toast;
-
-import com.android.volley.VolleyError;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -28,7 +24,6 @@ import pe.smartsystem.smartrestaurante.ConexionSQLITEhelper;
 import pe.smartsystem.smartrestaurante.IP;
 import pe.smartsystem.smartrestaurante.ui.activity.login.LoginActivity;
 import pe.smartsystem.smartrestaurante.R;
-import pe.smartsystem.smartrestaurante.ServiciosWeb.SolicitudesJson;
 import pe.smartsystem.smartrestaurante.Utilidades.Utilidades;
 
 public class SettingActivity extends AppCompatActivity {
@@ -50,6 +45,10 @@ public class SettingActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         setTitle("CONFIGURACION");
+        if (Build.VERSION.SDK_INT >= 21) {
+            Window window = getWindow();
+            window.setStatusBarColor(Color.parseColor("#014B46"));
+        }
 
         mAdminEditText  = findViewById(R.id.label_setting_et_admin);
         mPassEditText   = findViewById(R.id.label_setting_et_passwrod);

@@ -1,8 +1,11 @@
 package pe.smartsystem.smartrestaurante.URLs;
 
+import pe.smartsystem.smartrestaurante.Utilidades.SessionManager;
 import pe.smartsystem.smartrestaurante.ui.activity.login.LoginActivity;
 
 public class Links {
+
+
 
     private static String host= LoginActivity.IPgeneral;//"192.168.1.87";//190.81.3.91:82
 

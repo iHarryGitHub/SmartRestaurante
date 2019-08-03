@@ -28,7 +28,8 @@ public abstract class SolicitudesJson {
             public void onResponse(JSONObject datos) {
                 solicitudCompletada(datos);
             }
-        },new Response.ErrorListener(){
+        }
+        ,new Response.ErrorListener(){
             @Override
             public void onErrorResponse(VolleyError error) {
                 solicitudErronea(error);

@@ -1,14 +1,15 @@
-package pe.smartsystem.smartrestaurante.ui.activity;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+package pe.smartsystem.smartrestaurante.ui.activity.message;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -26,11 +27,10 @@ import es.dmoral.toasty.Toasty;
 import pe.smartsystem.smartrestaurante.R;
 import pe.smartsystem.smartrestaurante.ServiciosWeb.SolicitudesJson;
 import pe.smartsystem.smartrestaurante.URLs.Links;
+import pe.smartsystem.smartrestaurante.Utilidades.SessionManager;
 import pe.smartsystem.smartrestaurante.VolleyRP;
 import pe.smartsystem.smartrestaurante.ui.activity.main.MainActivity;
 import pe.smartsystem.smartrestaurante.ui.activity.message.adapter.CatAdapter;
-import pe.smartsystem.smartrestaurante.ui.activity.message.DetailAdapter;
-import pe.smartsystem.smartrestaurante.ui.activity.message.MessageCatPojo;
 import pe.smartsystem.smartrestaurante.ui.activity.message.adapter.OnSelectedListener;
 import pe.smartsystem.smartrestaurante.ui.activity.message.adapter.SelecAdapter;
 import pe.smartsystem.smartrestaurante.ui.activity.message.pojo.MensajeDetailPojo;
@@ -66,25 +66,38 @@ public class MessageActivity extends AppCompatActivity implements OnSelectedList
     private static final String URL_GET_MENSAJE = Links.URL_MENSAJE_GET;
     private static final String URL_GET_ACTUALIZARMENSAJE = Links.URL_INSERTMENSAJE_POST;
 
+
+    private SessionManager manager;
+
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message);
 
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
         volley = VolleyRP.getInstance(MessageActivity.this);
         mRequest = volley.getRequestQueue();
 
         detalleMesaPojo=(DetalleMesaPojo) getIntent().getExtras().get("extra");
 
-
+        manager=new SessionManager(this);
 
         assert detalleMesaPojo!=null;
         mNameTv = findViewById(R.id.label_message_name_tv);
 
         mNameTv.setText(detalleMesaPojo.getNomproducto()+"");
 
-        //mensajesCabe();
 
         buildRv();
 
@@ -116,7 +129,7 @@ public class MessageActivity extends AppCompatActivity implements OnSelectedList
 
                     @Override
                     public void solicitudErronea(VolleyError error) {
-                        Toast.makeText(MessageActivity.this,"No se Agrego el mensaje correctamente",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MessageActivity.this,error.getMessage()+"No se Agrego el mensaje correctamente",Toast.LENGTH_SHORT).show();
                     }
                 };
                 String msj=gusano;
@@ -129,7 +142,7 @@ public class MessageActivity extends AppCompatActivity implements OnSelectedList
                 hashMapToken.put("Mensaje", msj);
                 hashMapToken.put("idProducto", idpro);
 
-                s.solicitudJsonPOST(MessageActivity.this,URL_GET_ACTUALIZARMENSAJE,hashMapToken);
+                s.solicitudJsonPOST(MessageActivity.this,"http://"+manager.getIp()+"/WS/Mensaje_UPDATE.php",hashMapToken);
 
 
 
@@ -163,10 +176,12 @@ public class MessageActivity extends AppCompatActivity implements OnSelectedList
 
         String nmesa= MainActivity.numero_mesa;
         String idpro=detalleMesaPojo.getIdpro();
-        String url=Links.URL_CONSULTA_MSJ_PRO+"?nroMesa="+nmesa+"&idProducto="+idpro;
+        String url="http://"+manager.getIp()+"/WS/consultarMensajedeProducto.php"+"?nroMesa="+nmesa+"&idProducto="+idpro;
+        Log.e("URL", url);
         SolicitudesJson s= new SolicitudesJson() {
             @Override
             public void solicitudCompletada(JSONObject j) {
+                Log.e("MJS", j.toString());
                 try {
                     String TodoslasMesas= j.getString("mesajesPro");
                     JSONArray jsonArray = new JSONArray(TodoslasMesas);
@@ -187,6 +202,7 @@ public class MessageActivity extends AppCompatActivity implements OnSelectedList
                         }
                     }else {
                         String[] datos = msj.split("/");
+
                         int quantity = Integer.parseInt(getIntent().getStringExtra("quantity"));
 
                         for (int i = 0; i < quantity; i++) {
@@ -194,11 +210,13 @@ public class MessageActivity extends AppCompatActivity implements OnSelectedList
                             int posicionG = i + 1;
                             for (int j2 = 0; j2 < datos.length; j2++) {
                                 String filas[] = datos[j2].split(":");
+                                // String filas[] = datos[j2].split(",");
                                 String id = filas[0];
                                 String mens = filas[1];
                                 int posicion = i + 1;
                                 if (posicion == Integer.parseInt(id)) {
                                     pojo.setName(id + ":" + mens);
+                                    //pojo.setName(id + "," + mens);
                                     pojo.setOrder((i + 1) + "");
                                     selectedPojos.add(pojo);
                                 }
@@ -214,14 +232,14 @@ public class MessageActivity extends AppCompatActivity implements OnSelectedList
                     selecAdapter.notifyDataSetChanged();
                     selectedPojoAux.setName(detalleMesaPojo.getNomproducto());
                 }catch (JSONException e){
+                    Toast.makeText(MessageActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
 
                 }
             }
 
             @Override
             public void solicitudErronea(VolleyError error) {
-
-
+                Toasty.error(MessageActivity.this, "LlenamosMsj "+error.getMessage(), Toast.LENGTH_LONG).show();
             }
         };
         s.solicitudJsonGET(MessageActivity.this,url);
@@ -271,10 +289,15 @@ public class MessageActivity extends AppCompatActivity implements OnSelectedList
 
                 final MensajeDetailPojo pojo =mensajeDetailPojos.get(mCategoriaRv.getChildAdapterPosition(view));
                 String mensaje=pojo.getName();
-                mensaje=mensaje.replaceAll(":,",": ");
-                mensaje=mensaje.replaceAll(" ,"," ");
-                selecAdapter.addDetailItem(iSelectedPosition,selectedPojoAux,mensaje);
-                Toasty.info(MessageActivity.this, mensaje+" agregado...", Toast.LENGTH_SHORT, true).show();
+                try{
+                    mensaje=mensaje.replaceAll(":,",": ");
+                    mensaje=mensaje.replaceAll(" ,"," ");
+                    selecAdapter.addDetailItem(iSelectedPosition,selectedPojoAux,mensaje);
+                    Toasty.info(MessageActivity.this, mensaje+" agregado...", Toast.LENGTH_SHORT, true).show();
+
+                }catch (Exception e){
+                    Toasty.error(MessageActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                }
 
             }
         });
@@ -282,7 +305,7 @@ public class MessageActivity extends AppCompatActivity implements OnSelectedList
     }
 
     private void mensajesCabe(){
-        JsonObjectRequest solicitud = new JsonObjectRequest(URL_GET_CABEMENSAJE, null, new Response.Listener<JSONObject>() {
+        JsonObjectRequest solicitud = new JsonObjectRequest("http://"+manager.getIp()+"/WS/ConsultarMensajes.php?idmensajes=1", null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject datos) {
                 try {
@@ -301,7 +324,8 @@ public class MessageActivity extends AppCompatActivity implements OnSelectedList
         },new Response.ErrorListener(){
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(MessageActivity.this,"Error al consultar Mensajes",Toast.LENGTH_SHORT).show();
+                Toasty.error(MessageActivity.this, error.getMessage(), Toast.LENGTH_LONG).show();
+                //Toast.makeText(MessageActivity.this,"Error al consultar Mensajes",Toast.LENGTH_SHORT).show();
             }
         });
         VolleyRP.addToQueue(solicitud,mRequest,MessageActivity.this,volley);
@@ -309,7 +333,7 @@ public class MessageActivity extends AppCompatActivity implements OnSelectedList
 
     public void SolicitudMensajes(String idMensaje){
         mensajeDetailPojos.removeAll(mensajeDetailPojos);
-        JsonObjectRequest solicitud = new JsonObjectRequest(URL_GET_MENSAJE+idMensaje, null, new Response.Listener<JSONObject>() {
+        JsonObjectRequest solicitud = new JsonObjectRequest("http://"+manager.getIp()+"/WS/ConsultarMensajesDetalle.php?idmensajes="+idMensaje, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject datos) {
                 try {
@@ -328,7 +352,7 @@ public class MessageActivity extends AppCompatActivity implements OnSelectedList
         },new Response.ErrorListener(){
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(MessageActivity.this,"Error al consultar Mensajes",Toast.LENGTH_SHORT).show();
+                Toast.makeText(MessageActivity.this,"SolicitudMensajes "+error.getMessage(),Toast.LENGTH_LONG).show();
             }
         });
         VolleyRP.addToQueue(solicitud,mRequest,MessageActivity.this,volley);

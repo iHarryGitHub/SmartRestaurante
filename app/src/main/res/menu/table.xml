@@ -3,8 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:icon="@drawable/ic_loop_black_24dp"
-        android:id="@+id/action_settings"
+        android:id="@+id/action_update_toplas"
         android:orderInCategory="100"
-        android:title="Venta"
-        app:showAsAction="always" />
+        android:title="Actualizar Platos" />
+
+    <item
+        android:icon="@drawable/ic_loop_black_24dp"
+        android:id="@+id/action_exit"
+        android:orderInCategory="100"
+        android:title="Cerra Sesión" />
 </menu>

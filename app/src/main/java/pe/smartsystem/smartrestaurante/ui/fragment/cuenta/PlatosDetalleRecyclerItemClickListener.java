@@ -4,5 +4,5 @@ import android.view.View;
 
 public interface PlatosDetalleRecyclerItemClickListener {
     void onItemClick(int position, View view);
-    void onItemLongClick(int position, View v);
+    //void onItemLongClick(int position, View v);
 }

@@ -18,13 +18,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.activity.MessageActivity" />
+        <activity android:name=".ui.activity.message.MessageActivity" />
         <activity android:name=".TableActivity" />
-        <activity android:name=".setting.SettingActivity" />
+        <activity android:name=".ui.activity.setting.SettingActivity" />
         <activity
             android:name=".ui.activity.main.MainActivity"
-            android:label="@string/title_activity_main"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+            android:label="@string/title_activity_main" />
         <activity
             android:name=".ui.activity.login.LoginActivity">
 

@@ -78,7 +78,7 @@ public class SelecAdapter  extends RecyclerView.Adapter<SelecAdapter.MyHolder>{
 
 
         if(row_index==position)
-            holder.mLayout.setBackgroundColor(Color.parseColor("#f1f8e9"));
+            holder.mLayout.setBackgroundColor(Color.parseColor("#008577"));
 
 
         else
