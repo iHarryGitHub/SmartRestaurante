@@ -1,6 +1,8 @@
 package pe.smartsystem.smartrestaurante.ui.activity.main;
 
 import android.content.DialogInterface;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 
 import com.android.volley.Request;
@@ -16,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.view.MenuItem;
+import android.view.Window;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,6 +28,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import es.dmoral.toasty.Toasty;
+import pe.smartsystem.smartrestaurante.Utilidades.SessionManager;
 import pe.smartsystem.smartrestaurante.ui.activity.login.LoginActivity;
 import pe.smartsystem.smartrestaurante.R;
 import pe.smartsystem.smartrestaurante.ServiciosWeb.SolicitudesJson;
@@ -37,6 +41,9 @@ import pe.smartsystem.smartrestaurante.ui.fragment.top.TopFragment;
 
 public class MainActivity extends AppCompatActivity {
     MesaPojo mesaPojo;
+
+
+    private SessionManager manager;
 
     public static String numero_mesa;
     private VolleyRP volley;
@@ -90,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         //Toasty.info(MainActivity.this,"Imprimiendo",Toasty.LENGTH_SHORT,true).show();
-                        EnviarComanda(numero_mesa,LoginActivity.Personal.replace(" MOZO",""));
+                       EnviarComanda(numero_mesa,manager.getFullName());
                     }
                 });
 
@@ -108,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void EnviarComanda(final String nmesa, String mozo){
 
-        String url=Links.URL_ENV_COMANDAS+"Nmesa="+nmesa+"&mozo="+mozo;
+        String url="http://"+manager.getIp()+"/WS/Comanda.php?"+"Nmesa="+nmesa+"&mozo="+mozo;
 
         JsonObjectRequest solicitud = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
 
@@ -119,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(MainActivity.this, "No hay pendiente de envio decomandas", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
         VolleyRP.addToQueue(solicitud, mRequest, MainActivity.this, volley);
@@ -130,11 +137,30 @@ public class MainActivity extends AppCompatActivity {
     //private ProgressBar progresoSemanal;
 
     @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
+
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         BottomNavigationView navView = findViewById(R.id.nav_view);
        // getSupportActionBar().hide();
+
+        if (Build.VERSION.SDK_INT >= 21) {
+            Window window = getWindow();
+            window.setStatusBarColor(Color.parseColor("#014B46"));
+        }
+
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        // Session manager
+        manager = new SessionManager(getApplicationContext());
 
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
@@ -156,6 +182,7 @@ public class MainActivity extends AppCompatActivity {
 
         label_main_tv_moso.setText(LoginActivity.Nombre);
         label_id_mesa.setText("Mesa : "+numero_mesa);
+        setTitle("Mesa : "+numero_mesa+" "+manager.getFullName());
 
         //progreso =findViewById(R.id.progressBar4);
         //progresoSemanal=findViewById(R.id.progressBar3);
